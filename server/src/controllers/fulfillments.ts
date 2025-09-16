@@ -1,15 +1,8 @@
 import * as XLSX from 'xlsx';
-import fs from 'fs';
-import { TIK_TOK_CONFIG } from '../config';
 import { getOrderFulfillment } from '../lib/shopify/utils';
 import { parseCSV } from '../lib/utils';
 import type { Fulfillment, OrderRow } from '../lib/types/fulfillment';
 import type { GetOrderByIdQuery } from '../lib/types/admin.generated';
-
-const { fileNames } = TIK_TOK_CONFIG;
-
-// initalize output csv
-const fulfillmentsExport = `${fileNames.input}-fulfillments`;
 
 function getTrackingFromFulfillments(
   // @ts-expect-error - its fine
@@ -194,7 +187,7 @@ export const createFulfillmentsController = async (req: any, res: any) => {
     );
     res.setHeader(
       'Content-Disposition',
-      `attachment; filename=${fileNames.output}-fulfillments.xlsx`,
+      `attachment; filename=process-fulfillments.xlsx`,
     );
 
     res.send(xlsxBuffer);

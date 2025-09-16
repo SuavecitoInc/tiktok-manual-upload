@@ -1,5 +1,4 @@
 import { createObjectCsvStringifier } from 'csv-writer';
-import fs from 'fs';
 import { TIK_TOK_CONFIG } from '../config';
 import { createOrder, getOrderByTag } from '../lib/shopify/utils';
 import type { TikTokOrder } from '../lib/types/tiktok';
@@ -14,7 +13,6 @@ import {
 import type { LineItem, Order, ShippingLine } from '../lib/types/order';
 
 const {
-  fileNames,
   sourceName,
   currency,
   disableAmounts = false,

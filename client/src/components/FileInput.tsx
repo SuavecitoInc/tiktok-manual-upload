@@ -39,7 +39,7 @@ export default function FileInput({
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `processed.${fileExtension}`;
+    a.download = `processed-${title.toLowerCase()}.${fileExtension}`;
     document.body.appendChild(a);
     a.click();
     a.remove();
