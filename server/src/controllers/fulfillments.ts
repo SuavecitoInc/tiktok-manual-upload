@@ -74,24 +74,22 @@ function validateHeaders(headers: string[]) {
 
 export const createFulfillmentsController = async (req: any, res: any) => {
   try {
-    if (!req.file?.path) {
+    if (!req.file?.buffer) {
       return res.status(400).json({ error: 'file is required' });
     }
 
     console.log('TikTok Fulfillment CSV Generator');
     console.log('================================');
-    console.log('Using import file:', `${req.file?.path}`);
-    console.log('================================');
 
-    const rows = await parseCSV<OrderRow>(req.file.path);
+    const csvString = req.file.buffer.toString('utf8');
+
+    const rows = await parseCSV<OrderRow>(csvString);
     // check for the correct headers
     validateHeaders(Object.keys(rows[0]));
     console.log('CSV headers validated');
     console.log('================================');
 
     console.log('There are ', rows.length, 'rows in the CSV file');
-
-    fs.unlinkSync(req.file.path); // delete uploaded CSV immediately
 
     const fulfillments: Fulfillment[] = [];
 

@@ -5,13 +5,11 @@ import { getVariantBySku } from './shopify/utils';
 import type { LineItem, ShippingLine } from './types/order';
 import { ObjectMap } from 'csv-writer/src/lib/lang/object';
 import { CsvWriter } from 'csv-writer/src/lib/csv-writer';
+import { json } from 'stream/consumers';
 
-export const parseCSV = async <Row>(filePath: string) => {
-  const jsonArray = await csv().fromFile(
-    // path.join(__dirname, `../../${filePath}.csv`),
-    path.resolve(filePath)
-  );
-  return jsonArray as Row[];
+export const parseCSV = async <Row>(fileAsString: string) => {
+  const rows = await csv().fromString(fileAsString);
+  return rows as Row[];
 };
 
 export const initializeCSV = (

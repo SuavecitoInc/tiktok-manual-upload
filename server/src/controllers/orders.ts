@@ -65,12 +65,12 @@ function validateHeaders(headers: string[]) {
   }
 }
 
-async function createOrders(filePath: string) {
+async function createOrders(file: string) {
   console.log('TikTok Order Importer');
   console.log('=====================');
-  console.log('Processing file:', filePath);
+  // console.log('Processing file:', filePath);
 
-  const rows = await parseCSV<TikTokOrder>(filePath);
+  const rows = await parseCSV<TikTokOrder>(file);
   // check for the correct headers
   validateHeaders(Object.keys(rows[0]));
   console.log('CSV headers validated');
@@ -324,17 +324,16 @@ async function createOrders(filePath: string) {
 // Express controller
 export const createOrdersController = async (req: any, res: any) => {
   try {
-    if (!req.file?.path) {
+    if (!req.file?.buffer) {
       return res.status(400).json({ error: 'file is required' });
     }
 
-    const csvRecords = await createOrders(req.file.path);
+    const csvString = req.file.buffer.toString('utf8');
+
+    const csvRecords = await createOrders(csvString);
 
     console.log('=====================');
     console.log('All orders processed. Output written to CSV Download:');
-
-    // Delete uploaded file
-    fs.unlinkSync(req.file.path);
 
     // Create CSV string in memory
     const csvStringifier = createObjectCsvStringifier({

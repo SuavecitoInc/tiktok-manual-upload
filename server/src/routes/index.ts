@@ -7,7 +7,8 @@ import {
   createFulfillmentsController,
 } from '../controllers';
 
-const upload = multer({ dest: 'uploads/' });
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 const routes = (app: Express) => {
   app.get('/uptime', (req: Request, res: Response) => {
