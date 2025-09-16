@@ -11,6 +11,10 @@ Features:
 Use Case: 
 - TikTok orders are not syncing to Shopify automatically. This tool helps import those orders into Shopify and generate fulfillment files to update TikTok once the orders are shipped.
 
+
+<p align="center">
+  <img src="./screenshots/tiktok-manual-upload-orders.jpg" alt="TikTok Manual Upload Orders" width="1200">
+</p>
 ## Setup
 
 Generate a Shopify Admin API Access Token with the following scopes:
@@ -68,7 +72,3 @@ npm start
 docker build -t tiktok-manual-upload .
 docker run -p 3001:3001 --env-file .env tiktok-manual-upload
 ```
-
-<p align="center">
-  <img src="./screenshots/tiktok-manual-upload-orders.jpg" alt="TikTok Manual Upload Orders" width="1200">
-</p>
