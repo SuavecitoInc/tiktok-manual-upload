@@ -13,7 +13,7 @@ Use Case:
 
 
 <p align="center">
-  <img src="./screenshots/tiktok-manual-upload-orders.jpg" alt="TikTok Manual Upload Orders" width="1200">
+  <img src="./screenshots/screenshot.gif" alt="TikTok Manual Upload Orders" width="1200">
 </p>
 ## Setup
 

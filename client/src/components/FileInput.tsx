@@ -73,20 +73,22 @@ export default function FileInput({
     <div>
       <h2>{title}</h2>
       <p>{message}</p>
-      <input
-        type="file"
-        accept=".csv"
-        onChange={(e) => {
-          if (e.target.files && e.target.files.length > 0) {
-            setFile(e.target.files[0]);
-          } else {
-            setFile(null);
-          }
-        }}
-      />
-      <button className="button" onClick={handleUpload} disabled={!file}>
-        Process CSV
-      </button>
+      <div className="file-input-wrapper">
+        <input
+          type="file"
+          accept=".csv"
+          onChange={(e) => {
+            if (e.target.files && e.target.files.length > 0) {
+              setFile(e.target.files[0]);
+            } else {
+              setFile(null);
+            }
+          }}
+        />
+        <button className="btn" onClick={handleUpload} disabled={!file}>
+          Process CSV
+        </button>
+      </div>
       <div
         style={{
           fontFamily: 'monospace',
@@ -94,17 +96,63 @@ export default function FileInput({
           // padding: '1rem',
         }}
       >
-        <h2>Live Server Logs</h2>
-        <button className="button" onClick={clearLogs}>
+        <div
+          className="terminal"
+          role="application"
+          aria-label="macOS-like terminal"
+          ref={terminalRef}
+        >
+          <div className="term-header">
+            <div className="traffic" aria-hidden>
+              <div className="light r"></div>
+              <div className="light y"></div>
+              <div className="light g"></div>
+            </div>
+            <div className="term-title">
+              <b>bash</b> — local •{' '}
+              <span style={{ opacity: 0.7, marginLeft: 6 }}>~</span>
+            </div>
+            {/* <div className="toolbar">⌘K to clear</div> */}
+          </div>
+
+          <div className="term-body" id="termBody">
+            <div className="line">
+              <span className="output">
+                Last login: Thu Sep 17 2025 on ttys000
+              </span>
+            </div>
+
+            {/* the command area where JS will append lines */}
+            <div id="outputArea">
+              {logs.map((line, i) => (
+                <div key={i} className="line">
+                  <span className="output">{line}</span>
+                </div>
+              ))}
+            </div>
+
+            <div id="inputRow" className="line input-row" aria-live="polite">
+              <span className="prompt">$</span>
+              <div style={{ display: 'flex', flex: 1, minWidth: 0 }}>
+                <input
+                  id="cmdInput"
+                  className="cmd-input"
+                  autoComplete="off"
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck="false"
+                  aria-label="Command input"
+                />
+              </div>
+              <div className="cursor" id="staticCursor"></div>
+            </div>
+
+            <div className="glow" aria-hidden></div>
+          </div>
+        </div>
+        <button className="btn" onClick={clearLogs} style={{ marginTop: 4 }}>
           Clear Logs
         </button>
-        <div className="terminal" ref={terminalRef}>
-          {logs.map((line, i) => (
-            <div key={i} className="terminal-line">
-              {line}
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );

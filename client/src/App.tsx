@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import FileInput from './components/FileInput';
+import TikTokShopLogo from './components/TikTokShopLogo';
 
 import './App.css';
 
@@ -16,17 +17,19 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>TikTok Manual Upload</h1>
+    <div className="app">
+      <h1>
+        <TikTokShopLogo /> | Manual Upload
+      </h1>
       <div className="actions">
         <button
-          className={`button ${currentView === 'orders' ? 'active' : ''}`}
+          className={`btn ${currentView === 'orders' ? 'active' : ''}`}
           onClick={() => setCurrentView('orders')}
         >
           Orders
         </button>
         <button
-          className={`button ${currentView === 'fulfillments' ? 'active' : ''}`}
+          className={`btn ${currentView === 'fulfillments' ? 'active' : ''}`}
           onClick={() => setCurrentView('fulfillments')}
         >
           Fulfillments
@@ -48,6 +51,7 @@ function App() {
           fileExtension="xlsx"
         />
       )}
+      <div className="footer">© {new Date().getFullYear()} Suavecito</div>
     </div>
   );
 }
