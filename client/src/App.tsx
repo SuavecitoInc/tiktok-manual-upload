@@ -16,6 +16,8 @@ function App() {
       'Upload the CSV generated from the Orders step. This will generate a new Excel file that you can upload to TikTok to mark orders as fulfilled.',
   };
 
+  const host = window.location.hostname;
+
   return (
     <div className="app">
       <h1>
@@ -39,7 +41,7 @@ function App() {
         <FileInput
           title="Orders"
           message={messages.orders}
-          endpoint="http://localhost:3001/api/orders"
+          endpoint={`http://${host}:3001/api/orders`}
           fileExtension="csv"
         />
       )}
@@ -47,7 +49,7 @@ function App() {
         <FileInput
           title="Fulfillments"
           message={messages.fulfillments}
-          endpoint="http://localhost:3001/api/fulfillments"
+          endpoint={`http://${host}:3001/api/fulfillments`}
           fileExtension="xlsx"
         />
       )}

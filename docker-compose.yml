@@ -1,0 +1,15 @@
+version: "3.3"
+
+services:
+  tiktok-manual-upload:
+    image: jriv/tiktok-manual-upload:latest
+    container_name: tiktok-manual-upload
+    ports:
+      - 3001:3001 # <Host Port>:<Container Port>
+    restart: always
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+      driver: bridge

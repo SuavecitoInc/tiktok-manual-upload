@@ -69,6 +69,15 @@ npm start
 ## Docker Build & Run
 
 ```bash
-docker build -t tiktok-manual-upload .
-docker run -p 3001:3001 --env-file .env tiktok-manual-upload
+# build for x86 linux
+docker buildx build --platform=linux/amd64 -t jriv/tiktok-manual-upload:latest .
+# copy to server without repository
+docker save jriv/tiktok-manual-upload:latest | ssh jriv@192.168.1.123 "docker load"
+```
+
+Run on Server
+
+```bash
+# run
+docker run -p 3001:3001 --env-file .env tiktok-manual-upload:latest
 ```

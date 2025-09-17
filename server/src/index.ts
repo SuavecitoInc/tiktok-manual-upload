@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
 import path from 'path';
-import multer from 'multer';
 import WebSocket from 'ws';
 import http from 'http';
 import cors from 'cors';
@@ -8,9 +7,10 @@ import cors from 'cors';
 import setupApiRoutes from './routes';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT) || 3001;
 
-app.use(cors({ origin: 'http://localhost:3000' }));
+// app.use(cors({ origin: 'http://localhost:3001' }));
+app.use(cors());
 
 // Serve React static files (for production)
 app.use(express.static(path.join(__dirname, '../client/dist')));
@@ -49,6 +49,6 @@ wss.on('connection', (ws) => {
   ws.on('close', () => clients.delete(ws));
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

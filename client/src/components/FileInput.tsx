@@ -54,7 +54,9 @@ export default function FileInput({
   };
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:3001');
+    const host = window.location.hostname;
+    // ws://localhost:3001
+    const ws = new WebSocket(`ws://${host}:3001`);
 
     ws.onmessage = (event) => {
       setLogs((prev) => [...prev, event.data]);
