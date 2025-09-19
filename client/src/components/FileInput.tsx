@@ -53,6 +53,33 @@ export default function FileInput({
     setLogs([]);
   };
 
+  const now = new Date();
+
+  // format parts
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  const dayName = days[now.getDay()];
+  const monthName = months[now.getMonth()];
+  const day = now.getDate();
+  const year = now.getFullYear();
+
+  // build string
+  const loginString = `Last login: ${dayName} ${monthName} ${day} ${year} on ttys000`;
+
   useEffect(() => {
     const host = window.location.hostname;
     // ws://localhost:3001
@@ -119,9 +146,7 @@ export default function FileInput({
 
           <div className="term-body" id="termBody">
             <div className="line">
-              <span className="output">
-                Last login: Thu Sep 17 2025 on ttys000
-              </span>
+              <span className="output">{loginString}</span>
             </div>
 
             {/* the command area where JS will append lines */}
