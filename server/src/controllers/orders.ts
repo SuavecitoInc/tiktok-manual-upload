@@ -63,6 +63,14 @@ function validateHeaders(headers: string[]) {
   }
 }
 
+function cleanName(name: string) {
+  // remove . from the beginning and end of the name
+  let cleanedName = name.replace(/^\.+|\.+$/g, '').trim();
+  // remove instances of of more than one sequential . in the name
+  cleanedName = cleanedName.replace(/\.{2,}/g, '.');
+  return cleanedName;
+}
+
 async function createOrders(file: string) {
   console.log('TikTok Order Importer');
   console.log('=====================');
@@ -79,7 +87,7 @@ async function createOrders(file: string) {
   const orders: Record<string, Order> = {};
   rows.forEach((row) => {
     const orderId = row['Order ID'].trim();
-    const buyerEmail = row['Buyer Username'] + '@scs.tiktokw.us';
+    const buyerEmail = cleanName(row['Buyer Username']) + '@scs.tiktokw.us';
     const fullName = row['Recipient'].split(' ');
 
     if (!orders[orderId]) {
