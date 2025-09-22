@@ -17,6 +17,7 @@ export default function FileInput({
   const [file, setFile] = useState<File | null>(null);
 
   const terminalRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleUpload = async () => {
     const formData = new FormData();
@@ -47,6 +48,9 @@ export default function FileInput({
 
     // clear the file input
     setFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const clearLogs = () => {
@@ -104,6 +108,7 @@ export default function FileInput({
       <p>{message}</p>
       <div className="file-input-wrapper">
         <input
+          ref={fileInputRef}
           type="file"
           accept=".csv"
           onChange={(e) => {
