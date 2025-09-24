@@ -17,6 +17,7 @@ const {
   currency,
   disableAmounts = false,
   shippingMethodTitle,
+  retailDeliveryFeeConfig,
 } = TIK_TOK_CONFIG;
 
 function getTikTokSkuIds(lineItems: LineItem[]) {
@@ -217,7 +218,8 @@ async function createOrders(file: string) {
       if (retailDeliveryFee > 0) {
         lineItemsWithVariants.push({
           // @ts-expect-error - this is a custom line item
-          title: 'Retail Delivery Fee',
+          title: retailDeliveryFeeConfig.title,
+          variantId: retailDeliveryFeeConfig.variantId,
           quantity: 1,
           priceSet: {
             shopMoney: {
