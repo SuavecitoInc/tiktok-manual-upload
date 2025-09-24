@@ -17,6 +17,7 @@ const {
   currency,
   disableAmounts = false,
   shippingMethodTitle,
+  retailDeliveryFeeConfig,
 } = TIK_TOK_CONFIG;
 
 function getTikTokSkuIds(lineItems: LineItem[]) {
@@ -88,14 +89,16 @@ async function createOrders(file: string) {
   rows.forEach((row) => {
     const orderId = row['Order ID'].trim();
     const buyerEmail = cleanName(row['Buyer Username']) + '@scs.tiktokw.us';
-    const fullName = row['Recipient'].split(' ');
+    // remove double spaces from the name
+    // split the name into first and last name
+    const fullName = row['Recipient'].replace(/\s+/g, ' ').trim().split(' ');
 
     if (!orders[orderId]) {
       orders[orderId] = {
         customer: {
           email: buyerEmail,
-          firstName: fullName[0],
-          lastName: fullName[1],
+          firstName: fullName[0] ?? 'TikTok',
+          lastName: fullName[1] ?? 'Customer',
           phone: '',
         },
         shippingAddress: {
@@ -105,8 +108,8 @@ async function createOrders(file: string) {
           provinceCode: getStateCode(row['State']),
           zip: row['Zipcode'],
           countryCode: getCountryCode(row['Country']),
-          firstName: fullName[0] || 'TikTok',
-          lastName: fullName[1] || 'Customer',
+          firstName: fullName[0] ?? 'TikTok',
+          lastName: fullName[1] ?? 'Customer',
           phone: row['Phone #'],
         },
         lineItems: [
@@ -217,7 +220,8 @@ async function createOrders(file: string) {
       if (retailDeliveryFee > 0) {
         lineItemsWithVariants.push({
           // @ts-expect-error - this is a custom line item
-          title: 'Retail Delivery Fee',
+          title: retailDeliveryFeeConfig.title,
+          variantId: retailDeliveryFeeConfig.variantId,
           quantity: 1,
           priceSet: {
             shopMoney: {
