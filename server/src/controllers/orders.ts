@@ -1,3 +1,4 @@
+import type { Request, Response } from 'express';
 import { createObjectCsvStringifier } from 'csv-writer';
 import { TIK_TOK_CONFIG } from '../config';
 import { createOrder, getOrderByTag } from '../lib/shopify/utils';
@@ -332,7 +333,7 @@ async function createOrders(file: string) {
 }
 
 // Express controller
-export const createOrdersController = async (req: any, res: any) => {
+export const createOrdersController = async (req: Request, res: Response) => {
   try {
     if (!req.file?.buffer) {
       return res.status(400).json({ error: 'file is required' });

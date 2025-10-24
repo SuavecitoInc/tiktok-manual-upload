@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
+
 import { getOrderFulfillment } from '../lib/shopify/utils';
 import { parseCSV } from '../lib/utils';
 import type { Fulfillment, OrderRow } from '../lib/types/fulfillment';
@@ -54,6 +55,171 @@ function getTrackingFromFulfillments(
   return trackingInfoList;
 }
 
+type Shipment = {
+  orderId: string;
+  trackingId: string;
+  provider: string;
+  combineId: string;
+};
+
+async function generateShipmentWorkbook(shipments: Shipment[] = []) {
+  const wb = new ExcelJS.Workbook();
+
+  /* -------------------------------
+     Sheet 1: "How to use it"
+  -------------------------------- */
+  const ws1 = wb.addWorksheet('How to use it');
+
+  ws1.columns = [
+    { key: 'A', width: 25 },
+    { key: 'B', width: 100 },
+    { key: 'C', width: 50 },
+    { key: 'D', width: 30 },
+    { key: 'E', width: 15 },
+  ];
+
+  ws1.mergeCells('A1:E1');
+  ws1.mergeCells('A2:E7');
+  ws1.mergeCells('A8:E8');
+
+  const headerCell1 = ws1.getCell('A1');
+  headerCell1.value = 'Instructions';
+  headerCell1.font = { name: 'Calibri', size: 14, bold: true };
+  headerCell1.alignment = {
+    vertical: 'middle',
+    horizontal: 'left',
+    wrapText: true,
+  };
+  headerCell1.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFF2F2F2' },
+  };
+
+  const instr = `1. This upload template only applies to shipment of "Shipped by Seller" orders.
+    2. Review the 'Data definitions' and 'Example of shipment' tabs.
+    3. Export orders under the 'To ship' tab in Seller Center to get order details.
+    4. For combined orders:
+      - If multiple orders go to the same recipient, provide a Combine Group ID.
+    5. Auto-combined orders will have "N/A" as Combine ID.`;
+
+  const instrCell = ws1.getCell('A2');
+  instrCell.value = instr;
+  instrCell.font = { name: 'Calibri', size: 11 };
+  instrCell.alignment = { vertical: 'top', horizontal: 'left', wrapText: true };
+
+  const a8 = ws1.getCell('A8');
+  a8.value = '';
+  a8.alignment = { vertical: 'middle', horizontal: 'left' };
+
+  const borderAll = (ws: ExcelJS.Worksheet, range: string) => {
+    const [start, end] = range.split(':');
+    const startCell = ws.getCell(start);
+    const endCell = ws.getCell(end);
+    // @ts-ignore
+    for (let r = startCell.row; r <= endCell.row; r++) {
+      // @ts-ignore
+      for (let c = startCell.col; c <= endCell.col; c++) {
+        const cell = ws.getCell(r, c);
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      }
+    }
+  };
+
+  borderAll(ws1, 'A1:E1');
+  borderAll(ws1, 'A2:E7');
+  borderAll(ws1, 'A8:E8');
+
+  /* -------------------------------
+     Sheet 2: "Shipping info"
+  -------------------------------- */
+  const ws2 = wb.addWorksheet('Shipping info');
+  ws2.columns = [
+    { header: 'Order ID', key: 'orderId', width: 20 },
+    { header: 'Tracking ID', key: 'trackingId', width: 35 },
+    { header: 'Shipping Provider Name', key: 'provider', width: 30 },
+    { header: 'Auto Combine Group ID', key: 'combineId', width: 25 },
+  ];
+
+  // Top note row
+  ws2.mergeCells('A1:D1');
+  const topNote = ws2.getCell('A1');
+  topNote.value = 'Review the examples before you fill out this sheet.';
+  topNote.alignment = {
+    vertical: 'middle',
+    horizontal: 'left',
+    wrapText: true,
+  };
+  topNote.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFF5F5FF' },
+  };
+  topNote.font = { name: 'Calibri', size: 11 };
+
+  // Header row
+  const headerRow = ws2.getRow(2);
+  // @ts-ignore
+  headerRow.values = ws2.columns.map((c) => c.header);
+  headerRow.font = { name: 'Calibri', size: 11, bold: true };
+  headerRow.alignment = {
+    vertical: 'middle',
+    horizontal: 'left',
+    wrapText: true,
+  };
+  headerRow.height = 20;
+
+  headerRow.eachCell((cell) => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFF2F2F2' },
+    };
+    cell.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    };
+  });
+
+  // Freeze top rows
+  ws2.views = [{ state: 'frozen', ySplit: 2 }];
+
+  // Add each shipment
+  let currentRow = 3;
+  shipments.forEach((s) => {
+    const row = ws2.addRow([
+      s.orderId || '',
+      s.trackingId || '',
+      s.provider || '',
+      s.combineId || '',
+    ]);
+
+    row.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+      cell.alignment = { vertical: 'middle', horizontal: 'left' };
+    });
+
+    currentRow++;
+  });
+
+  const buffer = await wb.xlsx.writeBuffer();
+  console.log('✅ Workbook generation completed.');
+  // return buffer or stream as needed
+  return buffer;
+}
+
 function validateHeaders(headers: string[]) {
   const requiredHeaders = ['Order ID', 'Shopify Order ID', 'SKU IDs'];
   const missingHeaders = requiredHeaders.filter(
@@ -66,7 +232,7 @@ function validateHeaders(headers: string[]) {
   }
 }
 
-export const createFulfillmentsController = async (
+export const createFulfillmentsControllerV2 = async (
   req: Request,
   res: Response,
 ) => {
@@ -149,38 +315,14 @@ export const createFulfillmentsController = async (
       }
     }
 
-    // Build XLSX in memory
-    const headers = [
-      'Order ID',
-      'SKU ID(optional)',
-      'Quantity(optional)',
-      'Tracking ID',
-      'Shipping Provider Name',
-      'Shipping Service(optional)',
-      'Auto Combine Group ID',
-    ];
-
-    const sheetData = [
-      headers,
-      ...fulfillments.map((f) => [
-        f.orderId,
-        f.skuIdOptional,
-        f.quantityOptional,
-        f.trackingId,
-        f.shippingProviderName,
-        f.shippingServiceOptional,
-        f.autoCombineGroupId,
-      ]),
-    ];
-
-    const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Shipping info');
-
-    const xlsxBuffer = XLSX.write(workbook, {
-      type: 'buffer',
-      bookType: 'xlsx',
-    });
+    const xlsxBuffer = await generateShipmentWorkbook(
+      fulfillments.map((f) => ({
+        orderId: f.orderId,
+        trackingId: f.trackingId,
+        provider: f.shippingProviderName,
+        combineId: f.autoCombineGroupId,
+      })),
+    );
 
     console.log('================================');
     console.log('All Fulfillments written to XLSX Download');

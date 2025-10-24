@@ -5,6 +5,7 @@ import multer from 'multer';
 import {
   createOrdersController,
   createFulfillmentsController,
+  createFulfillmentsControllerV2,
 } from '../controllers';
 
 const storage = multer.memoryStorage();
@@ -26,7 +27,7 @@ const routes = (app: Express) => {
   apiRouter.post(
     '/fulfillments',
     upload.single('csv'),
-    createFulfillmentsController,
+    createFulfillmentsControllerV2,
   );
 
   app.use('/api', apiRouter);
