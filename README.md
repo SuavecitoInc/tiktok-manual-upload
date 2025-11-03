@@ -15,6 +15,7 @@ Use Case:
 <p align="center">
   <img src="./screenshots/screenshot.gif" alt="TikTok Manual Upload Orders" width="1200">
 </p>
+
 ## Setup
 
 Generate a Shopify Admin API Access Token with the following scopes:
