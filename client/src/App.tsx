@@ -5,15 +5,17 @@ import TikTokShopLogo from './components/TikTokShopLogo';
 import './App.css';
 
 function App() {
-  const [currentView, setCurrentView] = useState<'orders' | 'fulfillments'>(
-    'orders',
-  );
+  const [currentView, setCurrentView] = useState<
+    'orders' | 'fulfillments' | 'details'
+  >('orders');
 
   const messages = {
     orders:
       'Export TikTok Orders. Upload the CSV you get from TikTok. This will generate a new CSV that you can later use to generate a fulfillments CSV that you can upload to TikTok.',
     fulfillments:
       'Upload the CSV generated from the Orders step. This will generate a new Excel file that you can upload to TikTok to mark orders as fulfilled.',
+    details:
+      'Export TikTok Orders. Upload the CSV you get from TikTok. This will generate a new CSV with order details from Shopify and NetSuite that you can use for troubleshooting and reconciling orders.',
   };
 
   const host = window.location.hostname;
@@ -36,6 +38,12 @@ function App() {
         >
           Fulfillments
         </button>
+        <button
+          className={`btn ${currentView === 'details' ? 'active' : ''}`}
+          onClick={() => setCurrentView('details')}
+        >
+          Details
+        </button>
       </div>
       {currentView === 'orders' && (
         <FileInput
@@ -51,6 +59,14 @@ function App() {
           message={messages.fulfillments}
           endpoint={`http://${host}:3001/api/fulfillments`}
           fileExtension="xlsx"
+        />
+      )}
+      {currentView === 'details' && (
+        <FileInput
+          title="Details"
+          message={messages.details}
+          endpoint={`http://${host}:3001/api/order-details`}
+          fileExtension="csv"
         />
       )}
       <div className="footer">© {new Date().getFullYear()} Suavecito</div>

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 
 type Props = {
-  title: 'Orders' | 'Fulfillments';
+  title: 'Orders' | 'Fulfillments' | 'Details';
   message: string;
   endpoint: string;
   fileExtension: 'csv' | 'xlsx';

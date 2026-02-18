@@ -41,7 +41,13 @@ export type GetOrderByTagQueryVariables = AdminTypes.Exact<{
 }>;
 
 
-export type GetOrderByTagQuery = { orders: { edges: Array<{ node: Pick<AdminTypes.Order, 'id' | 'name' | 'tags'> }> } };
+export type GetOrderByTagQuery = { orders: { edges: Array<{ node: (
+        Pick<AdminTypes.Order, 'id' | 'name' | 'tags' | 'displayFulfillmentStatus'>
+        & { fulfillments: Array<(
+          Pick<AdminTypes.Fulfillment, 'id' | 'status'>
+          & { trackingInfo: Array<Pick<AdminTypes.FulfillmentTrackingInfo, 'number' | 'url'>> }
+        )> }
+      ) }> } };
 
 export type GetVariantBySkuQueryVariables = AdminTypes.Exact<{
   sku: AdminTypes.Scalars['String']['input'];
@@ -52,7 +58,7 @@ export type GetVariantBySkuQuery = { productVariants: { edges: Array<{ node: Pic
 
 interface GeneratedQueryTypes {
   "#graphql\n  query GetOrderByID($id: ID!) {\n    order(id: $id) {\n      id\n      fulfillments(first: 10) {\n        id\n        status\n        createdAt\n        updatedAt\n        trackingInfo {\n          number\n          url\n          company\n        }\n        fulfillmentLineItems(first: 20) {\n          edges {\n            node {\n              id\n              lineItem {\n                id\n                sku\n                name\n                quantity\n              }\n              quantity\n            }\n          }\n        }\n      }\n    }\n  }\n": {return: GetOrderByIDQuery, variables: GetOrderByIDQueryVariables},
-  "#graphql\n  query GetOrderByTag($query: String!) {\n    orders(first: 10, query: $query) {\n      edges {\n        node {\n          id\n          name\n          tags\n          # Add other order fields you need here\n        }\n      }\n    }\n  }\n": {return: GetOrderByTagQuery, variables: GetOrderByTagQueryVariables},
+  "#graphql\n  query GetOrderByTag($query: String!) {\n    orders(first: 10, query: $query) {\n      edges {\n        node {\n          id\n          name\n          tags\n          # Add other order fields you need here\n          displayFulfillmentStatus\n          fulfillments(first: 10) {\n              id\n              status\n              trackingInfo {\n                number\n                url\n            }\n          }\n        }\n      }\n    }\n  }\n": {return: GetOrderByTagQuery, variables: GetOrderByTagQueryVariables},
   "#graphql\n  query GetVariantBySku($sku: String!) {\n    productVariants(first: 5, query: $sku) {\n      edges {\n        node {\n          id\n          sku\n          title\n        }\n      }\n    }\n  }\n": {return: GetVariantBySkuQuery, variables: GetVariantBySkuQueryVariables},
 }
 

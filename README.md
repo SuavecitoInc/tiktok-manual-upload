@@ -33,9 +33,19 @@ Generate a Shopify Admin API Access Token with the following scopes:
 Environmental Variables `.env`
 
 ```bash
+# Shopify
 SHOPIFY_ADMIN_API_VERSION=2025-07
 SHOPIFY_STORE=suavecito
 SHOPIFY_ACCESS_TOKEN=
+# NetSuite
+NETSUITE_ACCT_ID=
+# netsuite integration : Suavecito API - Web Services
+NETSUITE_CONSUMER_KEY=
+NETSUITE_CONSUMER_SECRET=
+NETSUITE_ACCESS_TOKEN=
+NETSUITE_TOKEN_SECRET=
+# restlets
+NETSUITE_RESTLET_URL=
 ```
 
 Generate Types

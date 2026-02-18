@@ -7,6 +7,15 @@ const query = `#graphql
           name
           tags
           # Add other order fields you need here
+          displayFulfillmentStatus
+          fulfillments(first: 10) {
+              id
+              status
+              trackingInfo {
+                number
+                url
+            }
+          }
         }
       }
     }
